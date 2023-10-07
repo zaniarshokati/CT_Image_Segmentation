@@ -160,13 +160,23 @@ def show_image_slice(image_slice):
         None
     """
     plt.figure()
-    plt.imshow(image_slice, cmap="gray", origin="lower")
-    plt.show()
+    plt.imshow(image_slice.T, cmap="gray", origin="lower")
 
-def overlay_plot(im, mask):
+
+def overlay_image_with_mask(image, mask):
+    """
+    Overlay an image with a mask for visualization.
+
+    Args:
+        image (numpy.ndarray): The grayscale image.
+        mask (numpy.ndarray): The mask to overlay.
+
+    Returns:
+        None
+    """
     plt.figure()
-    plt.imshow(im.T, 'gray', interpolation='none')
-    plt.imshow(mask.T, 'jet', interpolation='none', alpha=0.5)
+    plt.imshow(image.T, cmap='gray', interpolation='none')
+    plt.imshow(mask.T, cmap='jet', interpolation='none', alpha=0.5)
 
 def save_nifty_binary_mask(binary_mask, output_name, affine_matrix):
     """

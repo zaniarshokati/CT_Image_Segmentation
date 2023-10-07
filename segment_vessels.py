@@ -54,7 +54,7 @@ for c, exam_path in enumerate(paths):
 
     vessels_only = create_vessel_mask(lung_mask, ct_numpy, denoise=True)
 
-    overlay_plot(ct_numpy, vessels_only)
+    overlay_image_with_mask(ct_numpy, vessels_only)
     plt.title('Overlayed plot')
     plt.savefig(overlay_name)
     plt.close()
