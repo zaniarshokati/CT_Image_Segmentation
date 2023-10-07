@@ -1,32 +1,24 @@
 import csv
 import glob
-
+import os
+import nibabel as nib
+import matplotlib.pyplot as plt
 from utils import *
 
 INPUT_PATH = './Images/slice*.nii.gz'
 OUTPUT_PATH = './Vessels/'
-FIGURES_PATH = './Figures/'
 OVERLAY_PATH = './Vessel_overlayed/'
-paths = sorted(glob.glob(INPUT_PATH))
-my_file = open('vessel_volumes.csv', 'w')
-lung_areas_csv = []
-ratios = []
+OUTPUT_CSV_PATH = 'vessel_volumes.csv'
 
-create_directory(OUTPUT_PATH)
-create_directory(OVERLAY_PATH)
-create_directory(FIGURES_PATH)
-
-for c, exam_path in enumerate(paths):
+def process_image(exam_path):
     img_name = exam_path.split("/")[-1].split('.nii')[0]
-    vessel_name = OUTPUT_PATH + img_name + "_vessel_only_mask"
-    overlay_name = OVERLAY_PATH + img_name + "_vessels"
+    vessel_name = os.path.join(OUTPUT_PATH, f'{img_name}_vessel_only_mask')
+    overlay_name = os.path.join(OVERLAY_PATH, f'{img_name}_vessels')
 
     ct_img = nib.load(exam_path)
-    pixdim = extract_pixel_dimensions(ct_img)
     ct_numpy = ct_img.get_fdata()
 
     contours = segment_intensity(ct_numpy, -1000, -300)
-
     lungs_contour = find_lung_contours(contours)
     lung_mask = create_mask_from_polygon(ct_numpy, lungs_contour)
 
@@ -44,10 +36,26 @@ for c, exam_path in enumerate(paths):
     vessel_area = compute_lung_area(vessels_only, extract_pixel_dimensions(ct_img))
     ratio = (vessel_area / lung_area) * 100
     print(img_name, 'Vessel %:', ratio)
-    lung_areas_csv.append([img_name, lung_area, vessel_area, ratio])
-    ratios.append(ratio)
 
-# Save data to csv file
-with my_file:
-    writer = csv.writer(my_file)
-    writer.writerows(lung_areas_csv)
+    return [img_name, lung_area, vessel_area, ratio]
+
+def main():
+    paths = sorted(glob.glob(INPUT_PATH))
+    create_directory(OUTPUT_PATH)
+    create_directory(OVERLAY_PATH)
+
+    lung_areas_csv = []
+    ratios = []
+
+    for exam_path in paths:
+        img_data = process_image(exam_path)
+        lung_areas_csv.append(img_data)
+        ratios.append(img_data[3])
+
+    # Save data to csv file
+    with open(OUTPUT_CSV_PATH, 'w', newline='') as my_file:
+        writer = csv.writer(my_file)
+        writer.writerows(lung_areas_csv)
+
+if __name__ == "__main__":
+    main()
