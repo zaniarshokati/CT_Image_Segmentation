@@ -15,3 +15,6 @@ Vessels/
 __pycache__/
 lung_volumes.csv
 vessel_volumes.csv
+temp.py
+results_.zip
+.vscode/settings.json
