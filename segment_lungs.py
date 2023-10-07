@@ -2,19 +2,19 @@ import glob
 import csv
 from utils import *
 
-basepath = './Images/slice*.nii.gz'
-outpath = './LUNGS/'
-contour_path = './Contours/'
-paths = sorted(glob.glob(basepath))
-myFile = open('lung_volumes.csv', 'w')
+INPUT_PATH = './Images/slice*.nii.gz'
+OUTPUT_PATH = './LUNGS/'
+CONTOUR_PATH = './Contours/'
+paths = sorted(glob.glob(INPUT_PATH))
+my_file = open('lung_volumes.csv', 'w')
 lung_areas = []
-make_dirs(outpath)
-make_dirs(contour_path)
+make_dirs(OUTPUT_PATH)
+make_dirs(CONTOUR_PATH)
 
 for c, exam_path in enumerate(paths):
     img_name = exam_path.split("/")[-1].split('.nii')[0]
-    out_mask_name = outpath + img_name + "_mask"
-    contour_name = contour_path + img_name + "_contour"
+    out_mask_name = OUTPUT_PATH + img_name + "_mask"
+    contour_name = CONTOUR_PATH + img_name + "_contour"
 
     ct_img = nib.load(exam_path)
     pixdim = find_pix_dim(ct_img)
@@ -31,6 +31,6 @@ for c, exam_path in enumerate(paths):
     lung_areas.append([img_name,lung_area]) # int is ok since the units are already mm^2
 
 
-with myFile:
-    writer = csv.writer(myFile)
+with my_file:
+    writer = csv.writer(my_file)
     writer.writerows(lung_areas)
