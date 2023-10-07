@@ -25,7 +25,7 @@ for c, exam_path in enumerate(paths):
     lungs = find_lung_contours(contours)
     display_contours(ct_numpy, lungs, title=contour_name,save=True)
     lung_mask = create_mask_from_polygon(ct_numpy, lungs)
-    save_nifty(lung_mask, out_mask_name, ct_img.affine)
+    save_nifty_binary_mask(lung_mask, out_mask_name, ct_img.affine)
 
     lung_area = compute_area(lung_mask, extract_pixel_dimensions(ct_img))
     lung_areas.append([img_name,lung_area]) # int is ok since the units are already mm^2

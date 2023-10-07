@@ -54,7 +54,7 @@ for c, exam_path in enumerate(paths):
     plt.savefig(overlay_name)
     plt.close()
 
-    save_nifty(vessels_only, vessel_name, affine=ct_img.affine)
+    save_nifty_binary_mask(vessels_only, vessel_name, affine=ct_img.affine)
 
     vessel_area = compute_area(vessels_only, extract_pixel_dimensions(ct_img))
     ratio = (vessel_area / lung_area) * 100

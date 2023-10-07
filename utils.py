@@ -170,20 +170,26 @@ def overlay_plot(im, mask):
     plt.imshow(mask.T, 'jet', interpolation='none', alpha=0.5)
 
 
-def save_nifty(img_np, name, affine):
+def save_nifty_binary_mask(binary_mask, output_name, affine_matrix):
     """
-    binary masks should be converted to 255 so it can be displayed in a nii viewer
-    we pass the affine of the initial image to make sure it exits in the same
-    image coordinate space
+    Save a binary mask as a NIfTI file, converting values to 255 for display in NIfTI viewer.
+
     Args:
-        img_np: the binary mask
-        name: output name
-        affine: 4x4 np array
+        binary_mask (numpy.ndarray): The binary mask.
+        output_name (str): The name for the output NIfTI file.
+        affine_matrix (numpy.ndarray): The 4x4 affine transformation matrix.
+
     Returns:
+        None
     """
-    img_np[img_np == 1] = 255
-    ni_img = nib.Nifti1Image(img_np, affine)
-    nib.save(ni_img, name + '.nii.gz')
+    # Convert binary mask values to 255
+    binary_mask[binary_mask == 1] = 255
+
+    # Create a NIfTI image
+    nifti_image = nib.Nifti1Image(binary_mask, affine_matrix)
+
+    # Save the NIfTI image as a compressed (.nii.gz) file
+    nib.save(nifti_image, output_name + '.nii.gz')
 
 
 def extract_pixel_dimensions(ct_img):
