@@ -122,18 +122,34 @@ def find_lung_contours(contours, min_volume=2000):
     lung_contours = [contour for contour, _ in selected_contours]
     return lung_contours
 
+def display_contours(image, contours, title=None, save=False):
+    """
+    Display an image with overlaid contours.
 
-def show_contour(image, contours, name=None, save=False):
+    Args:
+        image (numpy.ndarray): The image to display.
+        contours (list): List of contours to overlay on the image.
+        title (str): Title for the displayed image (default: None).
+        save (bool): If True, save the image to a file; otherwise, display it (default: False).
+
+    Returns:
+        None
+    """
     fig, ax = plt.subplots()
-    ax.imshow(image.T, cmap=plt.cm.gray)
+    ax.imshow(image.T, cmap='gray')
+
     for contour in contours:
-        ax.plot(contour[:, 0], contour[:, 1], linewidth=1)
+        x, y = contour[:, 0], contour[:, 1]
+        ax.plot(x, y, linewidth=1)
 
     ax.set_xticks([])
     ax.set_yticks([])
 
+    if title:
+        ax.set_title(title)
+
     if save:
-        plt.savefig(name)
+        plt.savefig(title)
         plt.close(fig)
     else:
         plt.show()
