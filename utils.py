@@ -82,9 +82,6 @@ def is_closed_contour(contour):
     """
     return np.all(contour[0] == contour[-1])
 
-def euclidean_dist(dx, dy):
-    return np.sqrt(np.power(dx, 2) + np.power(dy, 2))
-
 def find_lung_contours(contours, min_volume=2000):
     """
     Identifies and returns the contours corresponding to the lung area.
