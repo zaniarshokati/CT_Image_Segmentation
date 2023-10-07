@@ -46,7 +46,7 @@ for c, exam_path in enumerate(paths):
     lungs_contour = find_lung_contours(contours)
     lung_mask = create_mask_from_polygon(ct_numpy, lungs_contour)
 
-    lung_area = compute_area(lung_mask, extract_pixel_dimensions(ct_img))
+    lung_area = compute_lung_area(lung_mask, extract_pixel_dimensions(ct_img))
 
     vessels_only = create_vessel_mask(lung_mask, ct_numpy, denoise=True)
 
@@ -56,7 +56,7 @@ for c, exam_path in enumerate(paths):
 
     save_nifty_binary_mask(vessels_only, vessel_name, affine=ct_img.affine)
 
-    vessel_area = compute_area(vessels_only, extract_pixel_dimensions(ct_img))
+    vessel_area = compute_lung_area(vessels_only, extract_pixel_dimensions(ct_img))
     ratio = (vessel_area / lung_area) * 100
     print(img_name, 'Vessel %:', ratio)
     lung_areas_csv.append([img_name, lung_area, vessel_area, ratio])

@@ -24,7 +24,7 @@ def process_image(exam_path):
     lung_mask = create_mask_from_polygon(ct_numpy, lungs)
     save_nifty_binary_mask(lung_mask, out_mask_name, ct_img.affine)
 
-    lung_area = compute_area(lung_mask, extract_pixel_dimensions(ct_img))
+    lung_area = compute_lung_area(lung_mask, extract_pixel_dimensions(ct_img))
     return img_name, lung_area
 
 def main():

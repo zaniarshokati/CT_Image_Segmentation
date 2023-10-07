@@ -231,19 +231,24 @@ def clip_and_binarize_ct(ct_numpy, lower_bound, upper_bound):
 
     return binarized_image
 
-def compute_area(mask, pixdim):
+def compute_lung_area(binary_mask, pixel_dimensions):
     """
-    Computes the area (number of pixels) of a binary mask and multiplies the pixels
-    with the pixel dimension of the acquired CT image
-    Args:
-        lung_mask: binary lung mask
-        pixdim: list or tuple with two values
+    Compute the area (in mm^2) of a binary mask using pixel dimensions.
 
-    Returns: the lung area in mm^2
+    Args:
+        binary_mask (numpy.ndarray): Binary lung mask.
+        pixel_dimensions (tuple): Tuple with two values representing pixel dimensions (e.g., (pixel_size_x, pixel_size_y)).
+
+    Returns:
+        float: The lung area in mm^2.
     """
-    mask[mask >= 1] = 1
-    lung_pixels = np.sum(mask)
-    return lung_pixels * pixdim[0] * pixdim[1]
+    # Ensure the binary mask contains only 0s and 1s
+    binary_mask = np.clip(binary_mask, 0, 1)
+    
+    # Calculate the lung area by counting non-zero pixels and multiplying by pixel area
+    lung_area = np.sum(binary_mask) * (pixel_dimensions[0] * pixel_dimensions[1])
+    
+    return lung_area
 
 def denoise_vessels(lung_contour, vessels):
     vessels_coords_x, vessels_coords_y = np.nonzero(vessels)  # get non zero coordinates
