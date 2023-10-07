@@ -9,17 +9,19 @@ from scipy.spatial import ConvexHull
 from skimage import measure
 
 
-def make_dirs(path):
+def create_directory(path):
     """
-    Creates the directory as specified from the path
-    in case it exists it deletes it
+    Create a directory at the specified path. If it already exists, delete it and recreate it.
+
+    Args:
+        path (str): The directory path to be created.
+
+    Returns:
+        None
     """
     if os.path.exists(path):
         shutil.rmtree(path)
-        os.mkdir(path)
-    else:
-        os.makedirs(path)
-
+    os.makedirs(path)
 
 def create_mask_from_polygon(image, contours):
     """
@@ -80,7 +82,6 @@ def is_closed_contour(contour):
     """
     return np.all(contour[0] == contour[-1])
 
-
 def contour_distance(contour):
     """
     Given a set of points that may describe a contour
@@ -95,10 +96,8 @@ def contour_distance(contour):
     dy = contour[0, 0] - contour[-1, 0]
     return euclidean_dist(dx, dy)
 
-
 def euclidean_dist(dx, dy):
     return np.sqrt(np.power(dx, 2) + np.power(dy, 2))
-
 
 def find_lung_contours(contours, min_volume=2000):
     """
@@ -154,7 +153,6 @@ def display_contours(image, contours, title=None, save=False):
     else:
         plt.show()
 
-
 def show_slice(slice):
     """
     Function to display an image slice
@@ -163,12 +161,10 @@ def show_slice(slice):
     plt.figure()
     plt.imshow(slice.T, cmap="gray", origin="lower")
 
-
 def overlay_plot(im, mask):
     plt.figure()
     plt.imshow(im.T, 'gray', interpolation='none')
     plt.imshow(mask.T, 'jet', interpolation='none', alpha=0.5)
-
 
 def save_nifty_binary_mask(binary_mask, output_name, affine_matrix):
     """
@@ -190,7 +186,6 @@ def save_nifty_binary_mask(binary_mask, output_name, affine_matrix):
 
     # Save the NIfTI image as a compressed (.nii.gz) file
     nib.save(nifti_image, output_name + '.nii.gz')
-
 
 def extract_pixel_dimensions(ct_img):
     """
@@ -215,7 +210,6 @@ def extract_pixel_dimensions(ct_img):
     pixdimY = pix_dim[max_indices[1]]
 
     return [pixdimX, pixdimY]
-
 
 def clip_and_binarize_ct(ct_numpy, lower_bound, upper_bound):
     """
@@ -250,7 +244,6 @@ def compute_area(mask, pixdim):
     mask[mask >= 1] = 1
     lung_pixels = np.sum(mask)
     return lung_pixels * pixdim[0] * pixdim[1]
-
 
 def denoise_vessels(lung_contour, vessels):
     vessels_coords_x, vessels_coords_y = np.nonzero(vessels)  # get non zero coordinates

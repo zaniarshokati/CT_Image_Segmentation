@@ -29,8 +29,8 @@ def process_image(exam_path):
 
 def main():
     paths = sorted(glob.glob(INPUT_PATH))
-    make_dirs(OUTPUT_PATH)
-    make_dirs(CONTOUR_PATH)
+    create_directory(OUTPUT_PATH)
+    create_directory(CONTOUR_PATH)
 
     lung_areas = []
 

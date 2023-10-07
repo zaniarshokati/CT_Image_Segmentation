@@ -3,18 +3,18 @@ import glob
 
 from utils import *
 
-basepath = './Images/slice*.nii.gz'
-vessels = './Vessels/'
-figures = './Figures/'
-overlay_path = './Vessel_overlayed/'
-paths = sorted(glob.glob(basepath))
-myFile = open('vessel_volumes.csv', 'w')
+INPUT_PATH = './Images/slice*.nii.gz'
+OUTPUT_PATH = './Vessels/'
+FIGURES_PATH = './Figures/'
+OVERLAY_PATH = './Vessel_overlayed/'
+paths = sorted(glob.glob(INPUT_PATH))
+my_file = open('vessel_volumes.csv', 'w')
 lung_areas_csv = []
 ratios = []
 
-make_dirs(vessels)
-make_dirs(overlay_path)
-make_dirs(figures)
+create_directory(OUTPUT_PATH)
+create_directory(OVERLAY_PATH)
+create_directory(FIGURES_PATH)
 
 
 def split_array_coords(array, indx=0, indy=1):
@@ -38,8 +38,8 @@ def create_vessel_mask(lung_mask, ct_numpy, denoise=False):
 
 for c, exam_path in enumerate(paths):
     img_name = exam_path.split("/")[-1].split('.nii')[0]
-    vessel_name = vessels + img_name + "_vessel_only_mask"
-    overlay_name = overlay_path + img_name + "_vessels"
+    vessel_name = OUTPUT_PATH + img_name + "_vessel_only_mask"
+    overlay_name = OVERLAY_PATH + img_name + "_vessels"
 
     ct_img = nib.load(exam_path)
     pixdim = extract_pixel_dimensions(ct_img)
@@ -59,7 +59,7 @@ for c, exam_path in enumerate(paths):
     plt.savefig(overlay_name)
     plt.close()
 
-    save_nifty_binary_mask(vessels_only, vessel_name, affine=ct_img.affine)
+    save_nifty_binary_mask(vessels_only, vessel_name, affine_matrix=ct_img.affine)
 
     vessel_area = compute_area(vessels_only, extract_pixel_dimensions(ct_img))
     ratio = (vessel_area / lung_area) * 100
@@ -68,6 +68,6 @@ for c, exam_path in enumerate(paths):
     ratios.append(ratio)
 
 # Save data to csv file
-with myFile:
-    writer = csv.writer(myFile)
+with my_file:
+    writer = csv.writer(my_file)
     writer.writerows(lung_areas_csv)
