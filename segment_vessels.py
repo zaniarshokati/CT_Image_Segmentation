@@ -16,13 +16,6 @@ create_directory(OUTPUT_PATH)
 create_directory(OVERLAY_PATH)
 create_directory(FIGURES_PATH)
 
-
-def split_array_coords(array, indx=0, indy=1):
-    x = [array[i][indx] for i in range(len(array))]
-    y = [array[i][indy] for i in range(len(array))]
-    return x, y
-
-
 def create_vessel_mask(lung_mask, ct_numpy, denoise=False):
     vessels = lung_mask * ct_numpy  # isolate lung area
     vessels[vessels == 0] = -1000
