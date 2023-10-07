@@ -262,13 +262,30 @@ def compute_lung_area(binary_mask, pixel_dimensions):
     
     return lung_area
 
-def denoise_vessels(lung_contour, vessels):
-    vessels_coords_x, vessels_coords_y = np.nonzero(vessels)  # get non zero coordinates
-    for contour in lung_contour:
+def denoise_vessels(lung_contours, vessels):
+    """
+    Denoise vessels by removing vessel pixels that are close to lung contours.
+
+    Args:
+        lung_contours (list): List of lung contours.
+        vessels (numpy.ndarray): Binary vessel mask.
+
+    Returns:
+        numpy.ndarray: Denoised vessel mask.
+    """
+   # Get non-zero coordinates of vessels
+    vessels_coords_x, vessels_coords_y = np.nonzero(vessels)
+
+    # Define a threshold distance for denoising
+    threshold_distance = 0.1
+
+    for contour in lung_contours:
         x_points, y_points = contour[:, 0], contour[:, 1]
         for (coord_x, coord_y) in zip(vessels_coords_x, vessels_coords_y):
-            for (x, y) in zip(x_points, y_points):
-                d = euclidean_dist(x - coord_x, y - coord_y)
-                if d <= 0.1:
-                    vessels[coord_x, coord_y] = 0
+            # Calculate Euclidean distance between contour points and vessel coordinates
+            distances = np.sqrt((x_points - coord_x) ** 2 + (y_points - coord_y) ** 2)
+            
+            # Check if any distance is less than the threshold, and set vessel pixel to 0
+            if np.any(distances <= threshold_distance):
+                vessels[coord_x, coord_y] = 0
     return vessels
