@@ -289,3 +289,26 @@ def denoise_vessels(lung_contours, vessels):
             if np.any(distances <= threshold_distance):
                 vessels[coord_x, coord_y] = 0
     return vessels
+
+def create_vessel_mask(lung_mask, lungs_contour, ct_numpy, denoise=False):
+    """
+    Create a binary vessel mask based on lung mask, lung contours, and CT image.
+
+    Args:
+        lung_mask (numpy.ndarray): Binary lung mask.
+        lungs_contour (list): List of lung contours.
+        ct_numpy (numpy.ndarray): CT image data.
+        denoise (bool): Flag to apply denoising (default: False).
+
+    Returns:
+        numpy.ndarray: Binary vessel mask.
+    """
+    vessels = lung_mask * ct_numpy  # isolate lung area
+    vessels[vessels == 0] = -1000
+    vessels[vessels >= -500] = 1
+    vessels[vessels < -500] = 0
+    if denoise:
+        return denoise_vessels(lungs_contour, vessels)
+    show_image_slice(vessels)
+
+    return vessels

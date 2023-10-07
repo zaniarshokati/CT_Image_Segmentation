@@ -16,19 +16,6 @@ create_directory(OUTPUT_PATH)
 create_directory(OVERLAY_PATH)
 create_directory(FIGURES_PATH)
 
-def create_vessel_mask(lung_mask, ct_numpy, denoise=False):
-    vessels = lung_mask * ct_numpy  # isolate lung area
-    vessels[vessels == 0] = -1000
-    vessels[vessels >= -500] = 1
-    vessels[vessels < -500] = 0
-    show_image_slice(vessels)
-    if denoise:
-        return denoise_vessels(lungs_contour, vessels)
-    show_image_slice(vessels)
-
-    return vessels
-
-
 for c, exam_path in enumerate(paths):
     img_name = exam_path.split("/")[-1].split('.nii')[0]
     vessel_name = OUTPUT_PATH + img_name + "_vessel_only_mask"
@@ -45,7 +32,7 @@ for c, exam_path in enumerate(paths):
 
     lung_area = compute_lung_area(lung_mask, extract_pixel_dimensions(ct_img))
 
-    vessels_only = create_vessel_mask(lung_mask, ct_numpy, denoise=True)
+    vessels_only = create_vessel_mask(lung_mask, lungs_contour, ct_numpy, denoise=True)
 
     overlay_image_with_mask(ct_numpy, vessels_only)
     plt.title('Overlayed plot')
