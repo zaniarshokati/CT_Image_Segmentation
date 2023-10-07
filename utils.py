@@ -83,7 +83,17 @@ def is_closed_contour(contour):
     return np.all(contour[0] == contour[-1])
 
 def euclidean_dist(dx, dy):
-    return np.sqrt(np.power(dx, 2) + np.power(dy, 2))
+    """
+    Calculate the Euclidean distance between two points in 2D space.
+
+    Args:
+        dx (float): The horizontal distance.
+        dy (float): The vertical distance.
+
+    Returns:
+        float: The Euclidean distance.
+    """
+    return np.sqrt(dx**2 + dy**2)
 
 def find_lung_contours(contours, min_volume=2000):
     """
