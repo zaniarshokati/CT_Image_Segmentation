@@ -159,25 +159,30 @@ def save_nifty(img_np, name, affine):
     nib.save(ni_img, name + '.nii.gz')
 
 
-def find_pix_dim(ct_img):
+def extract_pixel_dimensions(ct_img):
     """
-    Get the pixdim of the CT image.
-    A general solution that get the pixdim indicated from the image
-    dimensions. From the last 2 image dimensions we get their pixel dimension.
+    Extract the pixel dimensions of a CT image.
+    This function retrieves the pixel dimensions for the X and Y axes.
+    
     Args:
         ct_img: nib image
 
-    Returns: List of the 2 pixel dimensions
+    Returns:
+        List of the 2 pixel dimensions [pixdimX, pixdimY]
     """
-    pix_dim = ct_img.header["pixdim"]
-    dim = ct_img.header["dim"]
-    max_indx = np.argmax(dim)
-    pixdimX = pix_dim[max_indx]
-    dim = np.delete(dim, max_indx)
-    pix_dim = np.delete(pix_dim, max_indx)
-    max_indy = np.argmax(dim)
-    pixdimY = pix_dim[max_indy]
+    header = ct_img.header
+    pix_dim = header["pixdim"]
+    dim = header["dim"]
+
+    # Find the indices of the two largest dimensions
+    max_indices = np.argpartition(dim, -2)[-2:]
+
+    # Extract the pixel dimensions for the largest and second largest dimensions
+    pixdimX = pix_dim[max_indices[0]]
+    pixdimY = pix_dim[max_indices[1]]
+
     return [pixdimX, pixdimY]
+
 
 
 def clip_ct(ct_numpy, min, max):

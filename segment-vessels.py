@@ -42,7 +42,7 @@ for c, exam_path in enumerate(paths):
     overlay_name = overlay_path + img_name + "_vessels"
 
     ct_img = nib.load(exam_path)
-    pixdim = find_pix_dim(ct_img)
+    pixdim = extract_pixel_dimensions(ct_img)
     ct_numpy = ct_img.get_fdata()
 
     contours = intensity_seg(ct_numpy, -1000, -300)
@@ -50,7 +50,7 @@ for c, exam_path in enumerate(paths):
     lungs_contour = find_lungs(contours)
     lung_mask = create_mask_from_polygon(ct_numpy, lungs_contour)
 
-    lung_area = compute_area(lung_mask, find_pix_dim(ct_img))
+    lung_area = compute_area(lung_mask, extract_pixel_dimensions(ct_img))
 
     vessels_only = create_vessel_mask(lung_mask, ct_numpy, denoise=True)
 
@@ -61,7 +61,7 @@ for c, exam_path in enumerate(paths):
 
     save_nifty(vessels_only, vessel_name, affine=ct_img.affine)
 
-    vessel_area = compute_area(vessels_only, find_pix_dim(ct_img))
+    vessel_area = compute_area(vessels_only, extract_pixel_dimensions(ct_img))
     ratio = (vessel_area / lung_area) * 100
     print(img_name, 'Vessel %:', ratio)
     lung_areas_csv.append([img_name, lung_area, vessel_area, ratio])
