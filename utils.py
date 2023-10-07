@@ -23,20 +23,20 @@ def make_dirs(path):
 
 def create_mask_from_polygon(image, contours):
     """
-    Creates a binary mask with the dimensions of the image and
-    converts the list of polygon-contours to binary masks and merges them together
+    Creates a binary mask with the dimensions of the image by converting a list of polygon-contours to binary masks
+    and merging them together.
+
     Args:
-        image: the image that the contours refer to
-        contours: list of contours
+        image (numpy.ndarray): The image that the contours refer to.
+        contours (list): List of contours.
 
     Returns:
-
+        numpy.ndarray: Binary mask.
     """
-
+    
     lung_mask = np.array(Image.new('L', image.shape, 0))
     for contour in contours:
-        x = contour[:, 0]
-        y = contour[:, 1]
+        x, y = contour[:, 0], contour[:, 1]
         polygon_tuple = list(zip(x, y))
         img = Image.new('L', image.shape, 0)
         ImageDraw.Draw(img).polygon(polygon_tuple, outline=0, fill=1)
