@@ -82,20 +82,6 @@ def is_closed_contour(contour):
     """
     return np.all(contour[0] == contour[-1])
 
-def contour_distance(contour):
-    """
-    Given a set of points that may describe a contour
-     it calculates the distance between the first and the last point
-     to infer if the set is closed.
-    Args:
-        contour: np array of x and y points
-
-    Returns: euclidean distance of first and last point
-    """
-    dx = contour[0, 1] - contour[-1, 1]
-    dy = contour[0, 0] - contour[-1, 0]
-    return euclidean_dist(dx, dy)
-
 def euclidean_dist(dx, dy):
     return np.sqrt(np.power(dx, 2) + np.power(dy, 2))
 
