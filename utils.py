@@ -47,11 +47,26 @@ def create_mask_from_polygon(image, contours):
 
     return lung_mask.T  # transpose it to be aligned with the image dims
 
+def segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300, threshold=0.95):
+    """
+    Segment regions in a CT image based on intensity values.
 
-def intensity_seg(ct_numpy, min=-1000, max=-300):
-    clipped = clip_ct(ct_numpy, min, max)
-    return measure.find_contours(clipped, 0.95)
+    Args:
+        ct_numpy (numpy.ndarray): Input CT image as a NumPy array.
+        lower_bound (int): Lower intensity threshold (default: -1000).
+        upper_bound (int): Upper intensity threshold (default: -300).
+        threshold (float): Contour detection threshold (default: 0.95).
 
+    Returns:
+        list: List of contours representing segmented regions.
+    """
+    # Clip the CT image to the specified intensity range
+    clipped_image = clip_and_binarize_ct(ct_numpy, lower_bound, upper_bound)
+
+    # Find contours in the clipped image
+    contours = measure.find_contours(clipped_image, threshold)
+
+    return contours
 
 def set_is_closed(contour):
     if contour_distance(contour) < 1:
@@ -184,16 +199,25 @@ def extract_pixel_dimensions(ct_img):
     return [pixdimX, pixdimY]
 
 
-
-def clip_ct(ct_numpy, min, max):
+def clip_and_binarize_ct(ct_numpy, lower_bound, upper_bound):
     """
-    Clips CT to predefined range and binarizes the values
-    """
-    clipped = ct_numpy.clip(min, max)
-    clipped[clipped != max] = 1
-    clipped[clipped == max] = 0
-    return clipped
+    Clips CT values to a predefined range and binarizes them.
 
+    Args:
+        ct_numpy (numpy.ndarray): Input CT image as a NumPy array.
+        lower_bound (float): Lower intensity threshold for clipping.
+        upper_bound (float): Upper intensity threshold for clipping.
+
+    Returns:
+        numpy.ndarray: Binarized CT image.
+    """
+    # Clip the CT values to the specified range
+    clipped_image = np.clip(ct_numpy, lower_bound, upper_bound)
+
+    # Binarize the clipped image
+    binarized_image = np.where(clipped_image == upper_bound, 1, 0)
+
+    return binarized_image
 
 def compute_area(mask, pixdim):
     """

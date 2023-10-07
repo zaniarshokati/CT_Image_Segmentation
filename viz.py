@@ -41,7 +41,7 @@ for c, exam_path in enumerate(paths):
     pixdim = extract_pixel_dimensions(ct_img)
     ct_numpy = ct_img.get_fdata()
 
-    contours = intensity_seg(ct_numpy, -1000, -300)
+    contours = segment_intensity(ct_numpy, -1000, -300)
 
     lungs_contour = find_lungs(contours)
     lung_mask = create_mask_from_polygon(ct_numpy, lungs_contour)

@@ -20,7 +20,7 @@ for c, exam_path in enumerate(paths):
     pixdim = extract_pixel_dimensions(ct_img)
     ct_numpy = ct_img.get_fdata()
 
-    contours = intensity_seg(ct_numpy, min=-1000, max=-300)
+    contours = segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300)
 
     lungs = find_lungs(contours)
     show_contour(ct_numpy, lungs, contour_name,save=True)
