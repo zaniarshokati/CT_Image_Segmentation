@@ -22,7 +22,7 @@ for c, exam_path in enumerate(paths):
 
     contours = segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300)
 
-    lungs = find_lungs(contours)
+    lungs = find_lung_contours(contours)
     show_contour(ct_numpy, lungs, contour_name,save=True)
     lung_mask = create_mask_from_polygon(ct_numpy, lungs)
     save_nifty(lung_mask, out_mask_name, ct_img.affine)

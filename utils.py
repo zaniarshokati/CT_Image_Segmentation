@@ -68,11 +68,17 @@ def segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300, threshold=0
 
     return contours
 
-def set_is_closed(contour):
-    if contour_distance(contour) < 1:
-        return True
-    else:
-        return False
+def is_closed_contour(contour):
+    """
+    Check if a contour is closed.
+
+    Args:
+        contour (numpy.ndarray): Contour to check.
+
+    Returns:
+        bool: True if the contour is closed, False otherwise.
+    """
+    return np.all(contour[0] == contour[-1])
 
 
 def contour_distance(contour):
@@ -94,37 +100,27 @@ def euclidean_dist(dx, dy):
     return np.sqrt(np.power(dx, 2) + np.power(dy, 2))
 
 
-def find_lungs(contours):
+def find_lung_contours(contours, min_volume=2000):
     """
-    Chooses the contours that correspond to the lungs and the body
-    FIrst we exclude non closed sets-contours
-    Then we assume some min area and volume to exclude small contours
-    Then the body is excluded as the highest volume closed set
-    The remaining areas correspond to the lungs
+    Identifies and returns the contours corresponding to the lung area.
 
     Args:
-        contours: all the detected contours
+        contours (list): List of detected contours.
+        min_volume (float): Minimum volume threshold for a contour to be considered (default: 2000).
 
-    Returns: contours that correspond to the lung area
-
+    Returns:
+        list: Contours corresponding to the lung area.
     """
-    body_and_lung_contours = []
-    vol_contours = []
 
-    for contour in contours:
-        hull = ConvexHull(contour)
+    selected_contours = [(contour, ConvexHull(contour).volume) for contour in contours if ConvexHull(contour).volume > min_volume and is_closed_contour(contour)]
 
-        if hull.volume > 2000 and set_is_closed(contour):
-            body_and_lung_contours.append(contour)
-            vol_contours.append(hull.volume)
-
-    if len(body_and_lung_contours) == 2:
-        return body_and_lung_contours
-    elif len(body_and_lung_contours) > 2:
-        vol_contours, body_and_lung_contours = (list(t) for t in
-                                                zip(*sorted(zip(vol_contours, body_and_lung_contours))))
-        body_and_lung_contours.pop(-1)
-        return body_and_lung_contours
+    if len(selected_contours) > 2:
+        selected_contours.sort(key=lambda x: x[1])
+        lung_contours = [contour for contour, _ in selected_contours[:-1]]
+        return lung_contours
+    
+    lung_contours = [contour for contour, _ in selected_contours]
+    return lung_contours
 
 
 def show_contour(image, contours, name=None, save=False):
