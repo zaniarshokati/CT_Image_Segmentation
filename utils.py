@@ -149,13 +149,19 @@ def display_contours(image, contours, title=None, save=False):
     else:
         plt.show()
 
-def show_slice(slice):
+def show_image_slice(image_slice):
     """
-    Function to display an image slice
-    Input is a numpy 2D array
+    Display a 2D image slice.
+
+    Args:
+        image_slice (numpy.ndarray): 2D array representing the image slice.
+
+    Returns:
+        None
     """
     plt.figure()
-    plt.imshow(slice.T, cmap="gray", origin="lower")
+    plt.imshow(image_slice, cmap="gray", origin="lower")
+    plt.show()
 
 def overlay_plot(im, mask):
     plt.figure()

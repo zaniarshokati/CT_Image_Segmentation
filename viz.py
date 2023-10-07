@@ -24,10 +24,10 @@ def create_vessel_mask(lung_mask, ct_numpy, denoise=False):
     vessels[vessels == 0] = -1000
     vessels[vessels >= -500] = 1
     vessels[vessels < -500] = 0
-    show_slice(vessels)
+    show_image_slice(vessels)
     if denoise:
         return denoise_vessels(lungs_contour, vessels)
-    show_slice(vessels)
+    show_image_slice(vessels)
 
     return vessels
 
