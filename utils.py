@@ -23,6 +23,7 @@ def create_directory(path):
         shutil.rmtree(path)
     os.makedirs(path)
 
+
 def create_mask_from_polygon(image, contours):
     """
     Creates a binary mask with the dimensions of the image by converting a list of polygon-contours to binary masks
@@ -35,19 +36,22 @@ def create_mask_from_polygon(image, contours):
     Returns:
         numpy.ndarray: Binary mask.
     """
-    
-    lung_mask = np.array(Image.new('L', image.shape, 0))
+
+    lung_mask = np.array(Image.new("L", image.shape, 0))
     for contour in contours:
         x, y = contour[:, 0], contour[:, 1]
         polygon_tuple = list(zip(x, y))
-        img = Image.new('L', image.shape, 0)
+        img = Image.new("L", image.shape, 0)
         ImageDraw.Draw(img).polygon(polygon_tuple, outline=0, fill=1)
         mask = np.array(img)
         lung_mask += mask
 
-    lung_mask[lung_mask > 1] = 1  # sanity check to make 100% sure that the mask is binary
+    lung_mask[
+        lung_mask > 1
+    ] = 1  # sanity check to make 100% sure that the mask is binary
 
     return lung_mask.T  # transpose it to be aligned with the image dims
+
 
 def segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300, threshold=0.95):
     """
@@ -70,6 +74,7 @@ def segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300, threshold=0
 
     return contours
 
+
 def is_closed_contour(contour):
     """
     Check if a contour is closed.
@@ -81,6 +86,7 @@ def is_closed_contour(contour):
         bool: True if the contour is closed, False otherwise.
     """
     return np.all(contour[0] == contour[-1])
+
 
 def euclidean_dist(dx, dy):
     """
@@ -95,6 +101,7 @@ def euclidean_dist(dx, dy):
     """
     return np.sqrt(dx**2 + dy**2)
 
+
 def find_lung_contours(contours, min_volume=2000):
     """
     Identifies and returns the contours corresponding to the lung area.
@@ -107,15 +114,20 @@ def find_lung_contours(contours, min_volume=2000):
         list: Contours corresponding to the lung area.
     """
 
-    selected_contours = [(contour, ConvexHull(contour).volume) for contour in contours if ConvexHull(contour).volume > min_volume and is_closed_contour(contour)]
+    selected_contours = [
+        (contour, ConvexHull(contour).volume)
+        for contour in contours
+        if ConvexHull(contour).volume > min_volume and is_closed_contour(contour)
+    ]
 
     if len(selected_contours) > 2:
         selected_contours.sort(key=lambda x: x[1])
         lung_contours = [contour for contour, _ in selected_contours[:-1]]
         return lung_contours
-    
+
     lung_contours = [contour for contour, _ in selected_contours]
     return lung_contours
+
 
 def display_contours(image, contours, title=None, save=False):
     """
@@ -131,7 +143,7 @@ def display_contours(image, contours, title=None, save=False):
         None
     """
     fig, ax = plt.subplots()
-    ax.imshow(image.T, cmap='gray')
+    ax.imshow(image.T, cmap="gray")
 
     for contour in contours:
         x, y = contour[:, 0], contour[:, 1]
@@ -148,6 +160,7 @@ def display_contours(image, contours, title=None, save=False):
         plt.close(fig)
     else:
         plt.show()
+
 
 def show_image_slice(image_slice):
     """
@@ -175,8 +188,9 @@ def overlay_image_with_mask(image, mask):
         None
     """
     plt.figure()
-    plt.imshow(image.T, cmap='gray', interpolation='none')
-    plt.imshow(mask.T, cmap='jet', interpolation='none', alpha=0.5)
+    plt.imshow(image.T, cmap="gray", interpolation="none")
+    plt.imshow(mask.T, cmap="jet", interpolation="none", alpha=0.5)
+
 
 def save_nifty_binary_mask(binary_mask, output_name, affine_matrix):
     """
@@ -197,13 +211,14 @@ def save_nifty_binary_mask(binary_mask, output_name, affine_matrix):
     nifti_image = nib.Nifti1Image(binary_mask, affine_matrix)
 
     # Save the NIfTI image as a compressed (.nii.gz) file
-    nib.save(nifti_image, output_name + '.nii.gz')
+    nib.save(nifti_image, output_name + ".nii.gz")
+
 
 def extract_pixel_dimensions(ct_img):
     """
     Extract the pixel dimensions of a CT image.
     This function retrieves the pixel dimensions for the X and Y axes.
-    
+
     Args:
         ct_img: nib image
 
@@ -222,6 +237,7 @@ def extract_pixel_dimensions(ct_img):
     pixdimY = pix_dim[max_indices[1]]
 
     return [pixdimX, pixdimY]
+
 
 def clip_and_binarize_ct(ct_numpy, lower_bound, upper_bound):
     """
@@ -243,6 +259,7 @@ def clip_and_binarize_ct(ct_numpy, lower_bound, upper_bound):
 
     return binarized_image
 
+
 def compute_lung_area(binary_mask, pixel_dimensions):
     """
     Compute the area (in mm^2) of a binary mask using pixel dimensions.
@@ -256,11 +273,12 @@ def compute_lung_area(binary_mask, pixel_dimensions):
     """
     # Ensure the binary mask contains only 0s and 1s
     binary_mask = np.clip(binary_mask, 0, 1)
-    
+
     # Calculate the lung area by counting non-zero pixels and multiplying by pixel area
     lung_area = np.sum(binary_mask) * (pixel_dimensions[0] * pixel_dimensions[1])
-    
+
     return lung_area
+
 
 def denoise_vessels(lung_contours, vessels):
     """
@@ -273,7 +291,7 @@ def denoise_vessels(lung_contours, vessels):
     Returns:
         numpy.ndarray: Denoised vessel mask.
     """
-   # Get non-zero coordinates of vessels
+    # Get non-zero coordinates of vessels
     vessels_coords_x, vessels_coords_y = np.nonzero(vessels)
 
     # Define a threshold distance for denoising
@@ -281,14 +299,15 @@ def denoise_vessels(lung_contours, vessels):
 
     for contour in lung_contours:
         x_points, y_points = contour[:, 0], contour[:, 1]
-        for (coord_x, coord_y) in zip(vessels_coords_x, vessels_coords_y):
+        for coord_x, coord_y in zip(vessels_coords_x, vessels_coords_y):
             # Calculate Euclidean distance between contour points and vessel coordinates
             distances = np.sqrt((x_points - coord_x) ** 2 + (y_points - coord_y) ** 2)
-            
+
             # Check if any distance is less than the threshold, and set vessel pixel to 0
             if np.any(distances <= threshold_distance):
                 vessels[coord_x, coord_y] = 0
     return vessels
+
 
 def create_vessel_mask(lung_mask, lungs_contour, ct_numpy, denoise=False):
     """
