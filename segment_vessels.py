@@ -12,7 +12,10 @@ class VesselVolumeAnalyzer:
         self.overlay_path = overlay_path
         self.output_csv_path = output_csv_path
         self.visualizer = Visualization()
-        self.lung_functions = LungHandler()
+        self.lung = Lung()
+        self.vessel = Vessel()
+        self.nifty = Nifty()
+
 
     def process_image(self, exam_path):
         img_name = os.path.basename(exam_path).split(".nii")[0]
@@ -22,23 +25,23 @@ class VesselVolumeAnalyzer:
         ct_img = nib.load(exam_path)
         ct_numpy = ct_img.get_fdata()
 
-        contours = segment_intensity(ct_numpy, -1000, -300)
-        lungs_contour = find_lung_contours(contours)
-        lung_mask = self.lung_functions.create_mask_from_polygon(ct_numpy, lungs_contour)
+        contours = self.lung.segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300)
+        lungs_contour = self.lung.find_lung_contours(contours)
+        lung_mask = self.lung.create_mask_from_polygon(ct_numpy, lungs_contour)
 
-        lung_area = compute_lung_area(lung_mask, extract_pixel_dimensions(ct_img))
+        lung_area = self.lung.compute_lung_area(lung_mask, ct_img)
 
-        vessels_only = create_vessel_mask(lung_mask, lungs_contour, ct_numpy, denoise=True)
+        vessels_only = self.vessel.create_vessel_mask(lung_mask, lungs_contour, ct_numpy, denoise=True)
         self.visualizer.show_image_slice(vessels_only)
 
-        overlay_image_with_mask(ct_numpy, vessels_only)
+        self.vessel.overlay_image_with_mask(ct_numpy, vessels_only)
         plt.title("Overlayed plot")
         plt.savefig(overlay_name)
         plt.close()
 
-        save_nifty_binary_mask(vessels_only, vessel_name, affine_matrix=ct_img.affine)
+        self.nifty.save_nifty_binary_mask(vessels_only, vessel_name, affine_matrix=ct_img.affine)
 
-        vessel_area = compute_lung_area(vessels_only, extract_pixel_dimensions(ct_img))
+        vessel_area = self.lung.compute_lung_area(vessels_only, ct_img)
         ratio = (vessel_area / lung_area) * 100
         print(f"{img_name} - Vessel %: {ratio:.2f}%")
 

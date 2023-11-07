@@ -11,7 +11,8 @@ class LungVolumeAnalyzer:
         self.contour_path = contour_path
         self.output_csv_path = output_csv_path
         self.visualizer = Visualization()
-        self.lung_functions = LungHandler()
+        self.lung = Lung()
+        self.nifty = Nifty()
 
     def process_image(self, exam_path):
         img_name = os.path.basename(exam_path).split(".nii")[0]
@@ -21,14 +22,14 @@ class LungVolumeAnalyzer:
         ct_img = nib.load(exam_path)
         ct_numpy = ct_img.get_fdata()
 
-        contours = segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300)
-        lungs = find_lung_contours(contours)
+        contours = self.lung.segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300)
+        lungs = self.lung.find_lung_contours(contours)
 
         self.visualizer.display_contours(ct_numpy, lungs, title=contour_name, save=True)
-        lung_mask = self.lung_functions.create_mask_from_polygon(ct_numpy, lungs)
-        save_nifty_binary_mask(lung_mask, out_mask_name, ct_img.affine)
+        lung_mask = self.lung.create_mask_from_polygon(ct_numpy, lungs)
+        self.nifty.save_nifty_binary_mask(lung_mask, out_mask_name, ct_img.affine)
 
-        lung_area = compute_lung_area(lung_mask, extract_pixel_dimensions(ct_img))
+        lung_area = self.lung.compute_lung_area(lung_mask, ct_img)
         return img_name, lung_area
 
     def analyze_images(self):
@@ -51,6 +52,7 @@ if __name__ == "__main__":
     OUTPUT_PATH = "./LUNGS/"
     CONTOUR_PATH = "./Contours/"
     OUTPUT_CSV_PATH = "lung_volumes.csv"
+    
 
     analyzer = LungVolumeAnalyzer(INPUT_PATH, OUTPUT_PATH, CONTOUR_PATH, OUTPUT_CSV_PATH)
     analyzer.analyze_images()
