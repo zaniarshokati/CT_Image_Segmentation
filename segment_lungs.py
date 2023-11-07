@@ -31,8 +31,8 @@ class LungVolumeAnalyzer:
 
     def analyze_images(self):
         paths = sorted(glob.glob(self.input_path))
-        create_directory(self.output_path)
-        create_directory(self.contour_path)
+        os.makedirs(self.output_path, exist_ok=True)
+        os.makedirs(self.contour_path, exist_ok=True)
 
         lung_areas = []
 

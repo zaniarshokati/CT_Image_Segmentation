@@ -7,21 +7,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from scipy.spatial import ConvexHull
 from skimage import measure
-
-
-def create_directory(path):
-    """
-    Create a directory at the specified path. If it already exists, delete it and recreate it.
-
-    Args:
-        path (str): The directory path to be created.
-
-    Returns:
-        None
-    """
-    if os.path.exists(path):
-        shutil.rmtree(path)
-    os.makedirs(path)
+from pathlib import Path
 
 
 def create_mask_from_polygon(image, contours):

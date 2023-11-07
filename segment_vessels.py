@@ -43,8 +43,8 @@ class VesselVolumeAnalyzer:
 
     def analyze_images(self):
         paths = sorted(glob.glob(self.input_path))
-        create_directory(self.output_path)
-        create_directory(self.overlay_path)
+        os.makedirs(self.output_path, exist_ok=True)
+        os.makedirs(self.overlay_path, exist_ok=True)
 
         vessel_data = []
 
