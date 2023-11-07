@@ -68,7 +68,6 @@ def is_closed_contour(contour):
     """
     return np.array_equal(contour[0], contour[-1])
 
-
 def find_lung_contours(contours, min_volume=2000):
     """
     Identifies and returns the contours corresponding to the lung area.
@@ -94,7 +93,6 @@ def find_lung_contours(contours, min_volume=2000):
 
     lung_contours = [contour for contour, _ in selected_contours]
     return lung_contours
-
 
 def display_contours(image, contours, title=None, save=False):
     """
@@ -128,7 +126,6 @@ def display_contours(image, contours, title=None, save=False):
     else:
         plt.show()
 
-
 def show_image_slice(image_slice):
     """
     Display a 2D image slice.
@@ -141,7 +138,6 @@ def show_image_slice(image_slice):
     """
     plt.figure()
     plt.imshow(image_slice.T, cmap="gray", origin="lower")
-
 
 def overlay_image_with_mask(image, mask):
     """
@@ -157,7 +153,6 @@ def overlay_image_with_mask(image, mask):
     plt.figure()
     plt.imshow(image.T, cmap="gray", interpolation="none")
     plt.imshow(mask.T, cmap="jet", interpolation="none", alpha=0.5)
-
 
 def save_nifty_binary_mask(binary_mask, output_name, affine_matrix):
     """
@@ -179,7 +174,6 @@ def save_nifty_binary_mask(binary_mask, output_name, affine_matrix):
 
     # Save the NIfTI image as a compressed (.nii.gz) file
     nib.save(nifti_image, output_name + ".nii.gz")
-
 
 def extract_pixel_dimensions(ct_img):
     """
@@ -205,7 +199,6 @@ def extract_pixel_dimensions(ct_img):
 
     return [pixdimX, pixdimY]
 
-
 def clip_and_binarize_ct(ct_numpy, lower_bound, upper_bound):
     """
     Clips CT values to a predefined range and binarizes them.
@@ -226,7 +219,6 @@ def clip_and_binarize_ct(ct_numpy, lower_bound, upper_bound):
 
     return binarized_image
 
-
 def compute_lung_area(binary_mask, pixel_dimensions):
     """
     Compute the area (in mm^2) of a binary mask using pixel dimensions.
@@ -245,7 +237,6 @@ def compute_lung_area(binary_mask, pixel_dimensions):
     lung_area = np.sum(binary_mask) * (pixel_dimensions[0] * pixel_dimensions[1])
 
     return lung_area
-
 
 def denoise_vessels(lung_contours, vessels):
     """
@@ -274,7 +265,6 @@ def denoise_vessels(lung_contours, vessels):
             if np.any(distances <= threshold_distance):
                 vessels[coord_x, coord_y] = 0
     return vessels
-
 
 def create_vessel_mask(lung_mask, lungs_contour, ct_numpy, denoise=False):
     """
