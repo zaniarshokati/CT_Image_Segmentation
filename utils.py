@@ -1,5 +1,3 @@
-import os
-import shutil
 
 import matplotlib.pyplot as plt
 import nibabel as nib
@@ -7,7 +5,6 @@ import numpy as np
 from PIL import Image, ImageDraw
 from scipy.spatial import ConvexHull
 from skimage import measure
-from pathlib import Path
 
 
 def create_mask_from_polygon(image, contours):
@@ -23,21 +20,20 @@ def create_mask_from_polygon(image, contours):
         numpy.ndarray: Binary mask.
     """
 
-    lung_mask = np.array(Image.new("L", image.shape, 0))
+    image_shape = image.shape
+    lung_mask = np.zeros(image_shape, dtype=np.uint8)
+
     for contour in contours:
         x, y = contour[:, 0], contour[:, 1]
         polygon_tuple = list(zip(x, y))
-        img = Image.new("L", image.shape, 0)
-        ImageDraw.Draw(img).polygon(polygon_tuple, outline=0, fill=1)
-        mask = np.array(img)
-        lung_mask += mask
+        mask = Image.new("L", image_shape, 0)
+        ImageDraw.Draw(mask).polygon(polygon_tuple, outline=0, fill=1)
+        mask_array = np.array(mask)
+        lung_mask += np.transpose(mask_array)  # Transpose mask_array to match lung_mask shape
 
-    lung_mask[
-        lung_mask > 1
-    ] = 1  # sanity check to make 100% sure that the mask is binary
+    lung_mask = np.clip(lung_mask, 0, 1)  # Ensure the mask is binary
 
-    return lung_mask.T  # transpose it to be aligned with the image dims
-
+    return lung_mask
 
 def segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300, threshold=0.95):
     """
