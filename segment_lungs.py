@@ -11,6 +11,7 @@ class LungVolumeAnalyzer:
         self.contour_path = contour_path
         self.output_csv_path = output_csv_path
         self.visualizer = Visualization()
+        self.lung_functions = LungHandler()
 
     def process_image(self, exam_path):
         img_name = os.path.basename(exam_path).split(".nii")[0]
@@ -24,7 +25,7 @@ class LungVolumeAnalyzer:
         lungs = find_lung_contours(contours)
 
         self.visualizer.display_contours(ct_numpy, lungs, title=contour_name, save=True)
-        lung_mask = create_mask_from_polygon(ct_numpy, lungs)
+        lung_mask = self.lung_functions.create_mask_from_polygon(ct_numpy, lungs)
         save_nifty_binary_mask(lung_mask, out_mask_name, ct_img.affine)
 
         lung_area = compute_lung_area(lung_mask, extract_pixel_dimensions(ct_img))

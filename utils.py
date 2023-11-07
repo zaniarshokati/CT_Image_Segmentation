@@ -52,33 +52,35 @@ class Visualization :
         plt.figure()
         plt.imshow(image_slice.T, cmap="gray", origin="lower")
 
-def create_mask_from_polygon( image, contours):
-    """
-    Creates a binary mask with the dimensions of the image by converting a list of polygon-contours to binary masks
-    and merging them together.
+class LungHandler :
 
-    Args:
-        image (numpy.ndarray): The image that the contours refer to.
-        contours (list): List of contours.
+    def create_mask_from_polygon(self, image, contours):
+        """
+        Creates a binary mask with the dimensions of the image by converting a list of polygon-contours to binary masks
+        and merging them together.
 
-    Returns:
-        numpy.ndarray: Binary mask.
-    """
+        Args:
+            image (numpy.ndarray): The image that the contours refer to.
+            contours (list): List of contours.
 
-    image_shape = image.shape
-    lung_mask = np.zeros(image_shape, dtype=np.uint8)
+        Returns:
+            numpy.ndarray: Binary mask.
+        """
 
-    for contour in contours:
-        x, y = contour[:, 0], contour[:, 1]
-        polygon_tuple = list(zip(x, y))
-        mask = Image.new("L", image_shape, 0)
-        ImageDraw.Draw(mask).polygon(polygon_tuple, outline=0, fill=1)
-        mask_array = np.array(mask)
-        lung_mask += np.transpose(mask_array)  # Transpose mask_array to match lung_mask shape
+        image_shape = image.shape
+        lung_mask = np.zeros(image_shape, dtype=np.uint8)
 
-    lung_mask = np.clip(lung_mask, 0, 1)  # Ensure the mask is binary
+        for contour in contours:
+            x, y = contour[:, 0], contour[:, 1]
+            polygon_tuple = list(zip(x, y))
+            mask = Image.new("L", image_shape, 0)
+            ImageDraw.Draw(mask).polygon(polygon_tuple, outline=0, fill=1)
+            mask_array = np.array(mask)
+            lung_mask += np.transpose(mask_array)  # Transpose mask_array to match lung_mask shape
 
-    return lung_mask
+        lung_mask = np.clip(lung_mask, 0, 1)  # Ensure the mask is binary
+
+        return lung_mask
 
 def segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300, threshold=0.95):
     """

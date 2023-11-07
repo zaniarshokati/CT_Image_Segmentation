@@ -12,6 +12,7 @@ class VesselVolumeAnalyzer:
         self.overlay_path = overlay_path
         self.output_csv_path = output_csv_path
         self.visualizer = Visualization()
+        self.lung_functions = LungHandler()
 
     def process_image(self, exam_path):
         img_name = os.path.basename(exam_path).split(".nii")[0]
@@ -23,7 +24,7 @@ class VesselVolumeAnalyzer:
 
         contours = segment_intensity(ct_numpy, -1000, -300)
         lungs_contour = find_lung_contours(contours)
-        lung_mask = create_mask_from_polygon(ct_numpy, lungs_contour)
+        lung_mask = self.lung_functions.create_mask_from_polygon(ct_numpy, lungs_contour)
 
         lung_area = compute_lung_area(lung_mask, extract_pixel_dimensions(ct_img))
 
