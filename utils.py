@@ -6,8 +6,53 @@ from PIL import Image, ImageDraw
 from scipy.spatial import ConvexHull
 from skimage import measure
 
+class Visualization :
+    def display_contours(self, image, contours, title=None, save=False):
+        """
+        Display an image with overlaid contours.
 
-def create_mask_from_polygon(image, contours):
+        Args:
+            image (numpy.ndarray): The image to display.
+            contours (list): List of contours to overlay on the image.
+            title (str): Title for the displayed image (default: None).
+            save (bool): If True, save the image to a file; otherwise, display it (default: False).
+
+        Returns:
+            None
+        """
+        fig, ax = plt.subplots()
+        ax.imshow(image.T, cmap="gray")
+
+        for contour in contours:
+            x, y = contour[:, 0], contour[:, 1]
+            ax.plot(x, y, linewidth=1)
+
+        ax.set_xticks([])
+        ax.set_yticks([])
+
+        if title:
+            ax.set_title(title)
+
+        if save:
+            plt.savefig(title)
+            plt.close(fig)
+        else:
+            plt.show()
+
+    def show_image_slice(self,image_slice):
+        """
+        Display a 2D image slice.
+
+        Args:
+            image_slice (numpy.ndarray): 2D array representing the image slice.
+
+        Returns:
+            None
+        """
+        plt.figure()
+        plt.imshow(image_slice.T, cmap="gray", origin="lower")
+
+def create_mask_from_polygon( image, contours):
     """
     Creates a binary mask with the dimensions of the image by converting a list of polygon-contours to binary masks
     and merging them together.
@@ -94,50 +139,6 @@ def find_lung_contours(contours, min_volume=2000):
     lung_contours = [contour for contour, _ in selected_contours]
     return lung_contours
 
-def display_contours(image, contours, title=None, save=False):
-    """
-    Display an image with overlaid contours.
-
-    Args:
-        image (numpy.ndarray): The image to display.
-        contours (list): List of contours to overlay on the image.
-        title (str): Title for the displayed image (default: None).
-        save (bool): If True, save the image to a file; otherwise, display it (default: False).
-
-    Returns:
-        None
-    """
-    fig, ax = plt.subplots()
-    ax.imshow(image.T, cmap="gray")
-
-    for contour in contours:
-        x, y = contour[:, 0], contour[:, 1]
-        ax.plot(x, y, linewidth=1)
-
-    ax.set_xticks([])
-    ax.set_yticks([])
-
-    if title:
-        ax.set_title(title)
-
-    if save:
-        plt.savefig(title)
-        plt.close(fig)
-    else:
-        plt.show()
-
-def show_image_slice(image_slice):
-    """
-    Display a 2D image slice.
-
-    Args:
-        image_slice (numpy.ndarray): 2D array representing the image slice.
-
-    Returns:
-        None
-    """
-    plt.figure()
-    plt.imshow(image_slice.T, cmap="gray", origin="lower")
 
 def overlay_image_with_mask(image, mask):
     """
@@ -285,6 +286,6 @@ def create_vessel_mask(lung_mask, lungs_contour, ct_numpy, denoise=False):
     vessels[vessels < -500] = 0
     if denoise:
         return denoise_vessels(lungs_contour, vessels)
-    show_image_slice(vessels)
+    
 
     return vessels

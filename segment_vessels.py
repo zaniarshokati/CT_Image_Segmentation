@@ -11,6 +11,7 @@ class VesselVolumeAnalyzer:
         self.output_path = output_path
         self.overlay_path = overlay_path
         self.output_csv_path = output_csv_path
+        self.visualizer = Visualization()
 
     def process_image(self, exam_path):
         img_name = os.path.basename(exam_path).split(".nii")[0]
@@ -27,6 +28,7 @@ class VesselVolumeAnalyzer:
         lung_area = compute_lung_area(lung_mask, extract_pixel_dimensions(ct_img))
 
         vessels_only = create_vessel_mask(lung_mask, lungs_contour, ct_numpy, denoise=True)
+        self.visualizer.show_image_slice(vessels_only)
 
         overlay_image_with_mask(ct_numpy, vessels_only)
         plt.title("Overlayed plot")
