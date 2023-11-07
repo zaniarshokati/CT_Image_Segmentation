@@ -56,7 +56,6 @@ def segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300, threshold=0
 
     return contours
 
-
 def is_closed_contour(contour):
     """
     Check if a contour is closed.
@@ -67,7 +66,7 @@ def is_closed_contour(contour):
     Returns:
         bool: True if the contour is closed, False otherwise.
     """
-    return np.all(contour[0] == contour[-1])
+    return np.array_equal(contour[0], contour[-1])
 
 
 def find_lung_contours(contours, min_volume=2000):
