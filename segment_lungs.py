@@ -50,7 +50,7 @@ class LungVolumeAnalyzer:
 
 if __name__ == "__main__":
     INPUT_PATH = "./Images/slice*.nii.gz"
-    OUTPUT_PATH = "./LUNGS/"
+    OUTPUT_PATH = "./Lungs/"
     CONTOUR_PATH = "./Contours/"
     OUTPUT_CSV_PATH = "lung_volumes.csv"
     
