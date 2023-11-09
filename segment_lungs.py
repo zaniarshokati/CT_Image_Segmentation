@@ -15,12 +15,12 @@ class LungVolumeAnalyzer:
         self.contour_path = contour_path
         self.output_csv_path = output_csv_path
         
-    def process_image(self, exam_path):
-        img_name = os.path.basename(exam_path).split(".nii")[0]
+    def process_image(self, path):
+        img_name = os.path.basename(path).split(".nii")[0]
         out_mask_name = os.path.join(self.output_path, f"{img_name}_mask")
         contour_name = os.path.join(self.contour_path, f"{img_name}_contour")
 
-        ct_img = nib.load(exam_path)
+        ct_img = nib.load(path)
         ct_numpy = ct_img.get_fdata()
 
         contours = self.lung.segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300)
@@ -40,8 +40,8 @@ class LungVolumeAnalyzer:
 
         lung_areas = []
 
-        for exam_path in paths:
-            img_name, lung_area = self.process_image(exam_path)
+        for path in paths:
+            img_name, lung_area = self.process_image(path)
             lung_areas.append([img_name, lung_area])
 
         with open(self.output_csv_path, "w", newline="") as my_file:
