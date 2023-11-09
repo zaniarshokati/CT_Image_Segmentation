@@ -3,6 +3,7 @@ import csv
 import os
 import nibabel as nib
 from utils import *
+import cv2
 
 class LungVolumeAnalyzer:
     def __init__(self, input_path, output_path, contour_path, output_csv_path):
@@ -20,17 +21,17 @@ class LungVolumeAnalyzer:
         out_mask_name = os.path.join(self.output_path, f"{img_name}_mask")
         contour_name = os.path.join(self.contour_path, f"{img_name}_contour")
 
-        ct_img = nib.load(path)
-        ct_numpy = ct_img.get_fdata()
-
+        ct_nifti1 = nib.load(path)
+        # Extracts the image data, and converts it into a NumPy array
+        ct_numpy = ct_nifti1.get_fdata()
         contours = self.lung.segment_intensity(ct_numpy, lower_bound=-1000, upper_bound=-300)
         lungs = self.lung.find_lung_contours(contours)
 
         self.visualizer.display_contours(ct_numpy, lungs, title=contour_name, save=True)
         lung_mask = self.lung.create_mask_from_polygon(ct_numpy, lungs)
-        self.nifty.save_nifty_binary_mask(lung_mask, out_mask_name, ct_img.affine)
+        self.nifty.save_nifty_binary_mask(lung_mask, out_mask_name, ct_nifti1.affine)
 
-        lung_area = self.lung.compute_lung_area(lung_mask, ct_img)
+        lung_area = self.lung.compute_lung_area(lung_mask, ct_nifti1)
         return img_name, lung_area
 
     def analyze_images(self):
@@ -44,8 +45,8 @@ class LungVolumeAnalyzer:
             img_name, lung_area = self.process_image(path)
             lung_areas.append([img_name, lung_area])
 
-        with open(self.output_csv_path, "w", newline="") as my_file:
-            writer = csv.writer(my_file)
+        with open(self.output_csv_path, "w", newline="") as f:
+            writer = csv.writer(f)
             writer.writerows(lung_areas)
 
 if __name__ == "__main__":
