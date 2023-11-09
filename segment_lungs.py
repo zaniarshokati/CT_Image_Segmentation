@@ -6,14 +6,15 @@ from utils import *
 
 class LungVolumeAnalyzer:
     def __init__(self, input_path, output_path, contour_path, output_csv_path):
-        self.input_path = input_path
-        self.output_path = output_path
-        self.contour_path = contour_path
-        self.output_csv_path = output_csv_path
         self.visualizer = Visualization()
         self.lung = Lung()
         self.nifty = Nifty()
 
+        self.input_path = input_path
+        self.output_path = output_path
+        self.contour_path = contour_path
+        self.output_csv_path = output_csv_path
+        
     def process_image(self, exam_path):
         img_name = os.path.basename(exam_path).split(".nii")[0]
         out_mask_name = os.path.join(self.output_path, f"{img_name}_mask")
