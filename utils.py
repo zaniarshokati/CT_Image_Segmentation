@@ -72,7 +72,7 @@ class Lung :
 
         for contour in contours:
             x, y = contour[:, 0], contour[:, 1]
-            polygon_tuple = list(zip(x, y))
+            polygon_tuple = list(zip(x, y)) # Converting contour coordinates to a polygon object
             mask = Image.new("L", image_shape, 0)
             ImageDraw.Draw(mask).polygon(polygon_tuple, outline=0, fill=1)
             mask_array = np.array(mask)
