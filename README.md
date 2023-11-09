@@ -40,13 +40,13 @@ This code was developed with reference to [The AI Summer's Medical Image Analysi
 
 ## Dependencies
 
-Python 3.x
-Numpy
-nibabel
-matplotlib
-PIL
-scipy
-skimage
+. Python 3.x
+. Numpy
+. nibabel
+. matplotlib
+. PIL
+. scipy
+. skimage
 
 ## License
 
