@@ -18,3 +18,6 @@ vessel_volumes.csv
 temp.py
 results_.zip
 .vscode/settings.json
+Introduction to medical image processing with Python: CT lung and vessel segmentation without labels.html
+.gitignore
+graphs/
