@@ -26,3 +26,28 @@ To use this code, follow these steps:
 5. Run the code using the following command for lung segmentation:
    ```bash
    python segment_lungs.py
+
+## File Descriptions
+
+- `segment_lungs.py`: Python script for lung segmentation and volume analysis.
+- `segment_vessels.py`: Python script for vessel segmentation and volume analysis.
+- `utils.py`: Python module containing utility functions and classes for visualization, contour extraction, and NIfTI image processing.
+
+
+## Acknowledgements
+
+This code was developed with reference to [The AI Summer's Medical Image Analysis Tutorial](https://theaisummer.com/medical-image-python/), which provides valuable insights into medical image processing with Python.
+
+## Dependencies
+
+Python 3.x
+Numpy
+nibabel
+matplotlib
+PIL
+scipy
+skimage
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
